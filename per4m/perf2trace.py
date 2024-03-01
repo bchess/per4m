@@ -147,7 +147,11 @@ def gil2trace(input, verbose=1, take_probe="python:take_gil$", take_probe_return
                 print(header)
 
             # parse the header
-            comm, pid, cpu, time, event, *other = header.split()
+            header_split = header.strip().split()
+            if header_split[0].isdigit():
+                header_split.pop(0)
+
+            comm, pid, cpu, time, event, *other = header_split
             pid = int(pid)
             if pids and pid not in pids:  # optionally filter
                 continue
