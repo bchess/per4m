@@ -1,5 +1,6 @@
 #include <Python.h>
 #include <frameobject.h>
+#include <internal/pycore_frame.h>
 
 extern "C" void pytrace_function_entry(const char *filename,
                                        const char *funcname, int lineno,
@@ -17,10 +18,10 @@ int pytrace_trace(PyObject *obj, PyFrameObject *frame, int what,
     const char *funcname;
     int lineno;
 
-    PyCodeObject *code = frame->f_code;
+    PyCodeObject *code = frame->f_frame->f_code;
     filename = PyUnicode_AsUTF8(code->co_filename);
     funcname = PyUnicode_AsUTF8(code->co_name);
-    lineno = PyCode_Addr2Line(code, frame->f_lasti);
+    lineno = PyUnstable_InterpreterFrame_GetLine(frame->f_frame);
 
     pytrace_function_entry(filename, funcname, lineno, what);
   }
@@ -29,10 +30,10 @@ int pytrace_trace(PyObject *obj, PyFrameObject *frame, int what,
     const char *funcname;
     int lineno;
 
-    PyCodeObject *code = frame->f_code;
+    PyCodeObject *code = frame->f_frame->f_code;
     filename = PyUnicode_AsUTF8(code->co_filename);
     funcname = PyUnicode_AsUTF8(code->co_name);
-    lineno = PyCode_Addr2Line(code, frame->f_lasti);
+    lineno = PyUnstable_InterpreterFrame_GetLine(frame->f_frame);
 
     pytrace_function_return(filename, funcname, lineno, what);
   }
